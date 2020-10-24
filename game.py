@@ -61,7 +61,7 @@ class State:
                 curr_piece = Piece(color_j,(i+1,j+1))
                 print (str(i) + " "+ str(j))
                 #curr_piece.printPiece()
-                self.grid[i][j] = curr_piece
+                self.grid[j][i] = curr_piece
                 self.grid[0][0].printPiece()
                 color_j = color_j * -1
 
