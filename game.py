@@ -74,6 +74,7 @@ class State:
 
     def printState(self):
         for i in range(len(self.grid)):
+            print("")
             for j in range(len(self.grid[i])):
                 print (str(i+1) + " "+ str(j+1))
                 self.grid[i][j].printPiece()
