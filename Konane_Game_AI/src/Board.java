@@ -2,9 +2,11 @@ import java.util.*;
 
 public class Board {
     List<List<Piece>> board;
+    boolean started;
 
     public Board(){
         board = new ArrayList<List<Piece>>();
+        started = false;
 
         int color = -1;
 
@@ -22,10 +24,27 @@ public class Board {
 
     }
 
+    public void remove(int x, int y){
+        board.get(x-1).get(y-1).delete();
+    }
+
+
+    public boolean started(){
+        return started;
+    }
+    public void start(){
+        this.started = true;
+    }
+
 
     public static void main(String[] args){
         Board brd = new Board();
         brd.print();
+
+        Agent black = new Agent(brd,1);
+        black.move();
+        brd.print();
+
     }
 
 
