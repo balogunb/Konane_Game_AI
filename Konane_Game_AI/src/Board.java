@@ -90,15 +90,15 @@ public class Board {
             System.out.println("");
         }
     }
-    
-    
-    
+
+
+
 
     public List<int[]> getAdjacentSpots() {
         int[] emptySpot = findEmptySpot();
-        
+
         List<int[]> adjacentSpots = new ArrayList<int[]>();
-        
+
         if(emptySpot[0] == 1){
             int [] bt = new int [] {2,1};
             int [] right = new int [] {1,2};
@@ -132,7 +132,6 @@ public class Board {
             adjacentSpots.add(up);
         }
         else{}
-        
         return adjacentSpots;
     }
     
