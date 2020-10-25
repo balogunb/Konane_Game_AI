@@ -16,6 +16,10 @@ public class Piece {
         return this.color;
     }
 
+    public void setColor(int color){
+         this.color = color;
+    }
+
     public int[] getPosition(){
         return position;
     }
@@ -64,7 +68,7 @@ public class Piece {
                             res.add(possible2);
                         }
                         //if triple move right is possible
-                        if(this.position[0] <= 2){
+                        if(this.position[1] <= 2){
                             if(grid.get(x-1).get(y+4).getColor() == -1 && grid.get(x-1).get(y+5).getColor() == 0){
                                 Move possible2 = new Move(this.position,'R',3);
                                 res.add(possible2);
@@ -75,25 +79,27 @@ public class Piece {
                 }
             }
         }
-        else if (color == -1){
-            //check if a single up right is possible
-            if(grid.get(x-1).get(y).getColor() == 1 && grid.get(x-1).get(y+1).getColor() == 0) {
-                Move possible = new Move(this.position, 'R', 1);
-                res.add(possible);
-                //check if a double right move is possible
-                if (this.position[1] <= 4) {
-                    if (grid.get(x - 1).get(y + 2).getColor() == 1 && grid.get(x - 1).get(y + 3).getColor() == 0) {
-                        Move possible2 = new Move(this.position, 'R', 2);
-                        res.add(possible2);
-                    }
-                    //if triple move right is possible
-                    if (this.position[1] <= 2) {
-                        if (grid.get(x - 1).get(y + 4).getColor() == 1 && grid.get(x - 1).get(y + 5).getColor() == 0) {
-                            Move possible2 = new Move(this.position, 'R', 3);
+        else if (color == -1) {
+            //check if you can move right
+            if (this.position[1] <= 6) {
+                //check if a single right move is possible
+                if (grid.get(x - 1).get(y).getColor() == 1 && grid.get(x - 1).get(y + 1).getColor() == 0) {
+                    Move possible = new Move(this.position, 'R', 1);
+                    res.add(possible);
+                    //check if a double right move is possible
+                    if (this.position[1] <= 4) {
+                        if (grid.get(x - 1).get(y + 2).getColor() == 1 && grid.get(x - 1).get(y + 3).getColor() == 0) {
+                            Move possible2 = new Move(this.position, 'R', 2);
                             res.add(possible2);
                         }
+                        //if triple move right is possible
+                        if (this.position[1] <= 2) {
+                            if (grid.get(x - 1).get(y + 4).getColor() == 1 && grid.get(x - 1).get(y + 5).getColor() == 0) {
+                                Move possible2 = new Move(this.position, 'R', 3);
+                                res.add(possible2);
+                            }
+                        }
                     }
-
                 }
             }
         }
@@ -107,7 +113,7 @@ public class Piece {
         if (color == 1){
             //check if you can move Left
             if(this.position[1] >= 3){
-                //check if a single right move is possible
+                //check if a single Left move is possible
                 if(grid.get(x-1).get(y-2).getColor() == -1 && grid.get(x-1).get(y-3).getColor() == 0){
                     Move possible = new Move(this.position,'L',1);
                     res.add(possible);
@@ -131,7 +137,7 @@ public class Piece {
         else if (color == -1){
             //check if you can move Left
             if(this.position[1] >= 3){
-                //check if a single right move is possible
+                //check if a single Left move is possible
                 if(grid.get(x-1).get(y-2).getColor() == 1 && grid.get(x-1).get(y-3).getColor() == 0){
                     Move possible = new Move(this.position,'L',1);
                     res.add(possible);
@@ -142,7 +148,7 @@ public class Piece {
                             res.add(possible2);
                         }
                         //if triple move Left is possible
-                        if(this.position[0] >= 7){
+                        if(this.position[1] >= 7){
                             if(grid.get(x-1).get(y-6).getColor() == 1 && grid.get(x-1).get(y-7).getColor() == 0){
                                 Move possible2 = new Move(this.position,'L',3);
                                 res.add(possible2);
@@ -209,13 +215,6 @@ public class Piece {
                 }
             }
         }
-
-
-
-
-
-
-
     }
 
     public void checkUp(ArrayList<Move> res, List<List<Piece>> grid){
@@ -275,5 +274,9 @@ public class Piece {
                 }
             }
         }
+    }
+
+    public void printSpecial() {
+        System.out.print("["+this.color+ " (" + this.position[0]+ ", " + this.position[1] + " )]");
     }
 }

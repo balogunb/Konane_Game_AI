@@ -2,16 +2,12 @@ import java.util.*;
 
 public class Board {
     List<List<Piece>> board;
-    boolean started;
     int movesMade;
 
     public Board(){
         board = new ArrayList<List<Piece>>();
-        started = false;
         movesMade = 0;
-
         int color = -1;
-
         for(int i= 0; i < 8; i++){
             List<Piece> row =  new ArrayList<Piece>();
             color = color * -1;
@@ -23,8 +19,24 @@ public class Board {
             }
             board.add(row);
         }
-
     }
+
+    public Board(Board b){
+        this.board = new ArrayList<List<Piece>>();
+        this.movesMade = this.noMovesMade();
+        for(int i= 0; i < 8; i++){
+            List<Piece> row =  new ArrayList<Piece>();
+            for (int j = 0; j < 8; j++){
+                int color = b.getBoard().get(i).get(j).getColor();
+                int [] pos = b.getBoard().get(i).get(j).getPosition();
+                Piece curr = new Piece(color,pos[0], pos[1]);
+                row.add(curr);
+            }
+            board.add(row);
+        }
+    }
+
+
 
     public void remove(int x, int y){
         board.get(x-1).get(y-1).delete();
@@ -40,9 +52,6 @@ public class Board {
     public void increaseMoveCount(){
         this.movesMade++;
     }
-    public void start(){
-        this.started = true;
-    }
 
 
     public static void main(String[] args){
@@ -56,11 +65,12 @@ public class Board {
         Agent white = new Agent(brd, -1);
         white.move();
         brd.print();
-        
+
         while (black.hasMoves()){
             black.move();
             brd.print();
-        
+
+
             if(white.hasMoves()){
                 white.move();
                 brd.print();
@@ -73,7 +83,11 @@ public class Board {
                 System.out.println("White won");
                 break;
             }
+
+
         }
+        System.out.println("Total Moves made: "+ brd.movesMade);
+
         
 
     }
@@ -134,6 +148,11 @@ public class Board {
         else{}
         return adjacentSpots;
     }
+
+    public Board duplicate(){
+        Board temp = new Board();
+        return temp;
+    }
     
     
     
@@ -156,4 +175,9 @@ public class Board {
     public List<List<Piece>> getBoard() {
         return board;
     }
+
+    public void set(int x, int y, int color) {
+        board.get(x-1).get(y-1).setColor(color);
+    }
+
 }
