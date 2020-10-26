@@ -14,6 +14,10 @@ public class Move {
             this.times = times;
     }
 
+    public Move(){
+
+    }
+
 
     public char getDirection(){
         return direction;
@@ -26,8 +30,4 @@ public class Move {
     public int[] getStart(){
         return start;
     }
-
-
-
-
 }

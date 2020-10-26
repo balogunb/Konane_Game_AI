@@ -14,7 +14,7 @@ public class Node {
         this.b = new Board(b);
         this.player = player;
         this.black = new Agent(this.b,1);
-        this.white = new Agent(this.b,1);
+        this.white = new Agent(this.b,-1);
         this.staticEvalCnt = 0;
         this.maxDepth = maxDepth;
         this.prev = null;
@@ -37,7 +37,15 @@ public class Node {
     }
 
     public int staticEvaluation(){
-           return black.getAllMoves().size() - white.getAllMoves().size();
+            int blackMoves = black.getAllMoves().size();
+            int whiteMoves = white.getAllMoves().size();
+
+            if(whiteMoves == 0) return Integer.MAX_VALUE;
+            if(blackMoves == 0 ) return Integer.MIN_VALUE;
+
+
+           return blackMoves - whiteMoves;
+       //return black.getAllMoves().size();
     }
 
     public int getPlayer(){
@@ -46,15 +54,14 @@ public class Node {
 
 
     //Object first element is score and second is move
-    public Object[] alphaBeta(Node b, int alpha, int beta, int depth){
+    public Result alphaBeta(Node b, int alpha, int beta, int depth){
 
         //
         if (depth == maxDepth){
             staticEvalCnt++;
-            Object[] arr = new Object[2];
-            arr[0] = b.staticEvaluation();
-            arr[1] = null;
-            return arr;
+            int value = b.staticEvaluation();
+            Result res =  new Result(value,null);
+            return res;
         }
         else if (b.getPlayer() ==  1){//if black player (Max player)
             Move bestMove = null;
@@ -63,24 +70,20 @@ public class Node {
             for(int i = 0; i < successors.size(); i++){
                 total_branches++;
                 Node curNode = successors.get(i);
-                Object[] arr = miniMax(curNode, alpha,beta, depth+1);
+                Result res = alphaBeta(curNode, alpha,beta, depth+1);
 
-                if ((int)arr[0] > alpha){
-                    alpha = (int)arr[0];
-                    bestMove = b.previousMove();
+                if (res.val > alpha){
+                    alpha = res.val;
+                    bestMove = curNode.previousMove();
                 }
                 if (alpha >= beta){
                     cutoffs++;
-                    Object[] temp = new Object[2];
-                    temp[0] = beta;
-                    temp[1] = bestMove;
-                    return temp;
+                    res =  new Result(beta,bestMove);
+                    return res;
                 }
             }
-            Object[] temp = new Object[2];
-            temp[0] = alpha;
-            temp[1] = bestMove;
-            return temp;
+            Result res =  new Result(alpha,bestMove);
+            return res;
         }
         else if (b.getPlayer() == -1){
             Move bestMove = null;
@@ -89,68 +92,72 @@ public class Node {
             for(int i = 0; i < successors.size(); i++){
                 total_branches++;
                 Node curNode = successors.get(i);
-                Object[] arr = miniMax(curNode, alpha,beta, depth+1);
+                Result res = alphaBeta(curNode, alpha,beta, depth+1);
 
-                if ((int)arr[0] < beta){
-                    beta = (int)arr[0];
-                    bestMove = b.previousMove();
+                if (res.val < beta){
+                    beta = res.val;
+                    bestMove = curNode.previousMove();
                 }
                 if (beta <= alpha){
                     cutoffs++;
-                    Object[] temp = new Object[2];
-                    temp[0] = alpha;
-                    temp[1] = bestMove;
-                    return temp;
+                    res =  new Result(alpha,bestMove);
+                    return res;
                 }
             }
-            Object[] temp = new Object[2];
-            temp[0] = beta;
-            temp[1] = bestMove;
-            return temp;
-
+            Result res =  new Result(beta,bestMove);
+            return res;
         }
-        return new Object[2];
+        return new Result(0,null);
     }
 
 
 
     //Object first element is score and second is move
-    public Object[] miniMax(Node b, int depth){
+    public Result miniMax(Node b, int depth){
 
 
         if (depth == maxDepth){
             staticEvalCnt++;
-            Object[] arr = new Object[2];
-            arr[0] = b.staticEvaluation();
-            arr[1] = null;
-            return arr;
+            int value = b.staticEvaluation();
+            Result res =  new Result(value,null);
+            return res;
         }
         else if (b.getPlayer() ==  1){//if black player (Max player)
             Move bestMove = null;
-            List<Node> successors = successorNodes();
+            List<Node> successors = b.successorNodes();
             int currMax = Integer.MIN_VALUE;
 
             for(int i = 0; i < successors.size(); i++){
                 total_branches++;
                 Node curNode = successors.get(i);
-                Object[] arr = miniMax(curNode, depth+1);
-                if(currMax < (int)arr[0]){
-                    currMax = (int)arr[0];
-                    
+                Result res = curNode.miniMax(curNode, depth+1);
+                if(currMax < res.val){
+                    currMax = res.val;
+                    bestMove = curNode.previousMove();
                 }
+
             }
+            Result temp = new Result(currMax,bestMove);
+            return temp;
         }
         else if (b.getPlayer() == -1){
             Move bestMove = null;
-            List<Node> successors = successorNodes();
+            List<Node> successors = b.successorNodes();
+            int currMin = Integer.MAX_VALUE;
 
             for(int i = 0; i < successors.size(); i++){
                 total_branches++;
                 Node curNode = successors.get(i);
-                Object[] arr = miniMax(curNode,  depth+1);
+                Result res = curNode.miniMax(curNode, depth+1);
+                if(currMin > res.val){
+                    currMin = res.val;
+                    bestMove = curNode.previousMove();
+                }
             }
+            Result temp = new Result(currMin,bestMove);
+            return temp;
         }
-        return new Object[2];
+        return new Result(0,null);
     }
 
     private Move  previousMove() {
@@ -168,6 +175,8 @@ public class Node {
             allMoves = black.getAllMoves(1);
             for(int i = 0; i <allMoves.size();i++){
                 Board nextBoard = black.nextState(allMoves.get(i));
+                //System.out.println("Possible Next board");
+                //nextBoard.print();
                 Node tempNode = new Node(nextBoard,-1,maxDepth, allMoves.get(i));
                 successor.add(tempNode);
             }

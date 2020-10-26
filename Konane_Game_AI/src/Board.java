@@ -23,7 +23,7 @@ public class Board {
 
     public Board(Board b){
         this.board = new ArrayList<List<Piece>>();
-        this.movesMade = this.noMovesMade();
+        this.movesMade = b.noMovesMade();
         for(int i= 0; i < 8; i++){
             List<Piece> row =  new ArrayList<Piece>();
             for (int j = 0; j < 8; j++){
@@ -55,25 +55,31 @@ public class Board {
 
 
     public static void main(String[] args){
+        int evaluationCnt;
+
         Board brd = new Board();
         brd.print();
 
         Agent black = new Agent(brd,1);
-        black.move();
+        black.move(2);
         brd.print();
         
         Agent white = new Agent(brd, -1);
-        white.move();
+        white.move(2);
         brd.print();
 
-        while (black.hasMoves()){
-            black.move();
-            brd.print();
 
+        //
+
+        while (black.hasMoves()){
+            black.move(2);
+            brd.print();
+            //System.out.println("Black moved");
 
             if(white.hasMoves()){
-                white.move();
+                white.move(2);
                 brd.print();
+                System.out.println("White moved");
             }
             else {
                 System.out.println("Black won");
@@ -86,10 +92,7 @@ public class Board {
 
 
         }
-        System.out.println("Total Moves made: "+ brd.movesMade);
-
-        
-
+        //System.out.println("Total Moves made: "+ brd.movesMade);
     }
 
 
@@ -148,13 +151,6 @@ public class Board {
         else{}
         return adjacentSpots;
     }
-
-    public Board duplicate(){
-        Board temp = new Board();
-        return temp;
-    }
-    
-    
     
     
     public int[] findEmptySpot(){

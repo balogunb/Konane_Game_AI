@@ -1,21 +1,24 @@
 import java.util.*;
 
 public class Agent {
-
     Board state;
     int color;
     Random rand = new Random();
     List<Piece> activePieces;
 
-
-
     public Agent(Board brd, int color){
         this.state = brd;
         this.color = color;
+        this.activePieces = new ArrayList<Piece>();
 
     }
 
-    public Board move(){
+
+    //if algo = 1, move uses minMax withalphabeta
+    //if algo = 2, move uses minMax
+    //if algo = 3, move uses random agent
+    //if algo = 4, move request for user input
+    public Board move(int algo){
         //if the game has not been started and it is a black piece
         if (state.noMovesMade() == 0 && color == 1){
             state.increaseMoveCount();
@@ -43,20 +46,37 @@ public class Agent {
             return state;
         }
 
+        Move action = new Move();
+        if(algo == 1){
+            action = alphaBetaHeurisitic();
 
+        }
+        else if (algo == 2){
+            action = miniMaxHeurisitic();
+        }
+        else if (algo == 3){
+            action = randomHeurisitic();
 
-        Move action = randomHeurisitic();
+        }
+        else if (algo == 4){
+
+        }
         moveHelper(action);
+
         return state;
     }
 
-    public Move MiniMaxHeurisitic(){
-        Node head = new Node(state,color, 6);
-
-
-        return  randomHeurisitic();
+    public Move miniMaxHeurisitic(){
+        Node head = new Node(state,color, 3);
+        Result res = head.miniMax(head,0);
+        return  res.optimal;
     }
 
+    public Move alphaBetaHeurisitic(){
+        Node head = new Node(state,color, 2);
+        Result res = head.alphaBeta(head,Integer.MIN_VALUE, Integer.MAX_VALUE,0);
+        return  res.optimal;
+    }
 
     public Move randomHeurisitic(){
         List<Move> movesList = getAllMoves();
@@ -90,51 +110,53 @@ public class Agent {
     public Board nextState(Move action) {
         Board temp = new Board(state);
 
+        //System.out.println("Previous board");
+        //temp.print();
+
         temp.increaseMoveCount();
         int jump = action.getTimes()*2;// position to move
         int [] initial_pos = action.getStart();
         int move = 1;
         temp.remove(initial_pos[0] ,initial_pos[1]);
-        System.out.println("Moved from:" + initial_pos[0] + ", " + initial_pos[1]);
+        //System.out.println("Moved from:" + initial_pos[0] + ", " + initial_pos[1]);
 
-        System.out.println(action.getDirection());
+        //System.out.println(action.getDirection());
         switch (action.getDirection()){
             case 'U':
                 temp.set(initial_pos[0] - jump ,initial_pos[1],color);
-                System.out.println("Moved To:" + (initial_pos[0] - jump) + ", " + initial_pos[1]);
+                //System.out.println("Moved To:" + (initial_pos[0] - jump) + ", " + initial_pos[1]);
 
                 while(jump > 1){
                     temp.remove(initial_pos[0]- move++ ,initial_pos[1]);
                     jump--;
                 }
-                return;
+                return temp;
 
             case 'D':
                 temp.set(initial_pos[0] + jump ,initial_pos[1],color);
-                System.out.println("Moved To:" + (initial_pos[0] + jump) + ", " + initial_pos[1]);
+                //System.out.println("Moved To:" + (initial_pos[0] + jump) + ", " + initial_pos[1]);
                 while(jump > 1){
                     temp.remove(initial_pos[0]+ move++ ,initial_pos[1]);
                     jump--;
                 }
-                return;
+                return temp;
             case 'R':
                 temp.set(initial_pos[0]  ,initial_pos[1] + jump,color);
-                System.out.println("Moved To:" + initial_pos[0] + ", " + (initial_pos[1]+ jump));
+                //System.out.println("Moved To:" + initial_pos[0] + ", " + (initial_pos[1]+ jump));
 
                 while(jump > 1){
                     temp.remove(initial_pos[0] ,initial_pos[1] + move++);
                     jump--;
                 }
-                return;
+                return temp;
             case 'L':
                 temp.set(initial_pos[0]  ,initial_pos[1] - jump,color);
-                System.out.println("Moved To:" + initial_pos[0] + ", " + (initial_pos[1] - jump));
+                //System.out.println("Moved To:" + initial_pos[0] + ", " + (initial_pos[1] - jump));
 
                 while(jump > 1){
                     temp.remove(initial_pos[0] ,initial_pos[1] - move++);
                     jump--;
                 }
-
         }
         return temp;
     }
